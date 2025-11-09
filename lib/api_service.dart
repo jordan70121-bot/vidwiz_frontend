@@ -2,10 +2,9 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  // ✅ Link your Render backend here
   static const String baseUrl = 'https://vidwiz-backend.onrender.com';
 
-  static Future<String> checkServerStatus() async {
+  static Future<String> checkStatus() async {
     try {
       final response = await http.get(Uri.parse(baseUrl));
 
@@ -16,7 +15,7 @@ class ApiService {
         return 'Error: ${response.statusCode}';
       }
     } catch (e) {
-      return 'Error connecting: $e';
+      return 'Failed to connect: $e';
     }
   }
 }
