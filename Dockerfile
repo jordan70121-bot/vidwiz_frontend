@@ -1,15 +1,28 @@
-# Step 1: Build Flutter web app
-FROM cirrusci/flutter:latest as build
+# Step 1: Build the Flutter web app
+FROM ghcr.io/cirruslabs/flutter:latest AS build
 
-WORKDIR /app/lib
+WORKDIR /app
+
+# Copy the Flutter project files
 COPY . .
+
+# Enable web support (ensure Flutter is set up for web)
 RUN flutter config --enable-web
+
+# Get dependencies
 RUN flutter pub get
-RUN flutter build web
 
-# Step 2: Serve using Nginx (Alpine Linux)
+# Build the web app
+RUN flutter build web --release
+
+# Step 2: Serve using Nginx
 FROM nginx:alpine
-COPY --from=build /app/lib/build/web /usr/share/nginx/html
 
-EXPOSE 8080
+# Copy Flutter web build files to Nginx HTML directory
+COPY --from=build /app/build/web /usr/share/nginx/html
+
+# Expose the web port
+EXPOSE 80
+
+# Run Nginx in the foreground
 CMD ["nginx", "-g", "daemon off;"]
